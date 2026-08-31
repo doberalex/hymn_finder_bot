@@ -41,11 +41,7 @@ struct SearchView: View {
         NavigationStack {
             Group {
                 if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    ContentUnavailableView {
-                        Label("Найдите гимн", systemImage: "text.magnifyingglass")
-                    } description: {
-                        Text("Введите номер, название или любую строку из текста")
-                    }
+                    QuickAccessView()
                 } else if results.isEmpty {
                     ContentUnavailableView.search(text: query)
                 } else {
