@@ -7,6 +7,13 @@ final class HymnLibrary: ObservableObject {
     @Published private(set) var isLoading = true
     @Published private(set) var loadError: String?
     @AppStorage("favoriteHymnIDs") private var favoriteData = ""
+    @AppStorage("quickSongbookIDs") private var quickSongbookData = ""
+    @AppStorage("quickSongbooksInitialized") private var quickSongbooksInitialized = false
+
+    private static let defaultQuickSongbookIDs = [
+        "ru|Песнь Воз. Совета Церквей",
+        "ru|Молодежный сборник"
+    ]
 
     private(set) lazy var songbooks: [Songbook] = {
         let grouped = Dictionary(grouping: hymns) { "\($0.language)|\($0.songbook)" }
@@ -27,6 +34,10 @@ final class HymnLibrary: ObservableObject {
     }()
 
     init() {
+        if !quickSongbooksInitialized {
+            quickSongbookData = Self.defaultQuickSongbookIDs.joined(separator: "\n")
+            quickSongbooksInitialized = true
+        }
         Task { await load() }
     }
 
@@ -89,6 +100,30 @@ final class HymnLibrary: ObservableObject {
 
     private var favoriteIDs: Set<String> {
         Set(favoriteData.split(separator: "\n").map(String.init))
+    }
+
+    var quickSongbooks: [Songbook] {
+        let booksByID = Dictionary(uniqueKeysWithValues: songbooks.map { ($0.id, $0) })
+        return quickSongbookIDs.compactMap { booksByID[$0] }
+    }
+
+    func isQuickAccess(_ songbook: Songbook) -> Bool {
+        quickSongbookIDs.contains(songbook.id)
+    }
+
+    func toggleQuickAccess(_ songbook: Songbook) {
+        var ids = quickSongbookIDs
+        if let index = ids.firstIndex(of: songbook.id) {
+            ids.remove(at: index)
+        } else {
+            ids.append(songbook.id)
+        }
+        quickSongbookData = ids.joined(separator: "\n")
+        objectWillChange.send()
+    }
+
+    private var quickSongbookIDs: [String] {
+        quickSongbookData.split(separator: "\n").map(String.init)
     }
 }
 

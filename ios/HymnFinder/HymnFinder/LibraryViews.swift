@@ -15,10 +15,13 @@ struct SongbooksView: View {
                 NavigationLink {
                     SongbookDetailView(songbook: songbook)
                 } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(songbook.title).font(.headline)
-                        Text("\(songbook.languageName) · \(songbook.hymnCount) песен")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                    HStack(spacing: 12) {
+                        SongbookBadgeView(songbook: songbook, size: 42)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(songbook.title).font(.headline)
+                            Text("\(songbook.languageName) · \(songbook.hymnCount) песен")
+                                .font(.subheadline).foregroundStyle(.secondary)
+                        }
                     }.padding(.vertical, 3)
                 }
             }
@@ -39,6 +42,20 @@ struct SongbookDetailView: View {
             .navigationTitle(songbook.title)
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $query, prompt: "Номер или текст")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        library.toggleQuickAccess(songbook)
+                    } label: {
+                        Image(systemName: library.isQuickAccess(songbook) ? "pin.fill" : "pin")
+                    }
+                    .accessibilityLabel(
+                        library.isQuickAccess(songbook)
+                        ? "Убрать из быстрого доступа"
+                        : "Добавить в быстрый доступ"
+                    )
+                }
+            }
             .task(id: query) {
                 try? await Task.sleep(for: .milliseconds(180))
                 guard !Task.isCancelled else { return }

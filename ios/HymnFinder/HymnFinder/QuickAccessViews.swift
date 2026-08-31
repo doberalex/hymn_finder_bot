@@ -29,18 +29,7 @@ struct QuickAccessView: View {
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
 
-                VStack(spacing: 12) {
-                    quickSongbook(
-                        storedTitle: "Песнь Воз. Совета Церквей",
-                        displayTitle: "Песнь Возрождения Совета Церквей",
-                        icon: "music.note.list"
-                    )
-                    quickSongbook(
-                        storedTitle: "Молодежный сборник",
-                        displayTitle: "Молодёжный сборник",
-                        icon: "person.3.fill"
-                    )
-                }
+                quickSongbooks
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("По языку").font(.headline)
@@ -63,44 +52,113 @@ struct QuickAccessView: View {
     }
 
     @ViewBuilder
-    private func quickSongbook(storedTitle: String, displayTitle: String, icon: String) -> some View {
-        if let songbook = library.songbooks.first(where: { $0.title == storedTitle }) {
-            NavigationLink {
-                SongbookDetailView(songbook: songbook)
-            } label: {
-                QuickSongbookCard(songbook: songbook, displayTitle: displayTitle, icon: icon)
+    private var quickSongbooks: some View {
+        let books = library.quickSongbooks
+        if books.isEmpty {
+            Label("Закрепите сборник кнопкой булавки на его странице", systemImage: "pin")
+                .font(.subheadline).foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, minHeight: 72)
+                .padding(.horizontal)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        } else if books.count <= 2 {
+            VStack(spacing: 12) {
+                ForEach(books) { quickSongbook($0, compact: false) }
             }
-            .buttonStyle(.plain)
+        } else {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                ForEach(books) { quickSongbook($0, compact: true) }
+            }
         }
+    }
+
+    private func quickSongbook(_ songbook: Songbook, compact: Bool) -> some View {
+        NavigationLink {
+            SongbookDetailView(songbook: songbook)
+        } label: {
+            QuickSongbookCard(songbook: songbook, compact: compact)
+        }
+        .buttonStyle(.plain)
     }
 }
 
 private struct QuickSongbookCard: View {
     let songbook: Songbook
-    let displayTitle: String
-    let icon: String
+    let compact: Bool
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(displayTitle).font(.headline).multilineTextAlignment(.leading)
-                Text("\(songbook.hymnCount) песен")
-                    .font(.subheadline).foregroundStyle(.secondary)
+        Group {
+            if compact {
+                VStack(alignment: .leading, spacing: 10) {
+                    SongbookBadgeView(songbook: songbook, size: 38)
+                    Spacer(minLength: 2)
+                    Text(songbook.quickDisplayTitle)
+                        .font(.headline).multilineTextAlignment(.leading).lineLimit(3)
+                    Text("\(songbook.hymnCount) песен")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            } else {
+                HStack(alignment: .bottom, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(songbook.quickDisplayTitle).font(.headline).multilineTextAlignment(.leading)
+                        Text("\(songbook.hymnCount) песен")
+                            .font(.subheadline).foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 8)
+                    SongbookBadgeView(songbook: songbook, size: 46)
+                }
             }
-            Spacer(minLength: 8)
-            Image(systemName: icon)
-                .font(.system(size: 28, weight: .semibold))
-                .foregroundStyle(Color("AccentColor"))
-                .accessibilityHidden(true)
         }
-        .frame(maxWidth: .infinity, minHeight: 78, alignment: .leading)
-        .padding(18)
+        .frame(maxWidth: .infinity, minHeight: compact ? 126 : 78, alignment: .leading)
+        .padding(compact ? 14 : 18)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .stroke(.primary.opacity(0.08), lineWidth: 1)
         }
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+}
+
+struct SongbookBadgeView: View {
+    let songbook: Songbook
+    let size: CGFloat
+
+    private var symbol: String {
+        let title = songbook.title.lowercased()
+        if title.contains("молод") || title.contains("юност") { return "person.3.fill" }
+        if title.contains("дет") { return "figure.2.and.child.holdinghands" }
+        if title.contains("возрожд") || title.contains("воз.") { return "music.note.list" }
+        if title.contains("неба") { return "cloud.sun.fill" }
+        if title.contains("спас") { return "heart.fill" }
+        if title.contains("утро") { return "sun.max.fill" }
+        if title.contains("worship") || title.contains("хвал") { return "hands.clap.fill" }
+        if songbook.language != "ru" { return "globe" }
+        return "book.closed.fill"
+    }
+
+    private var badgeColor: Color {
+        let palette: [Color] = [.indigo, .teal, .blue, .purple, .orange, .mint, .cyan]
+        let seed = songbook.id.unicodeScalars.reduce(0) { $0 + Int($1.value) }
+        return palette[seed % palette.count]
+    }
+
+    var body: some View {
+        Image(systemName: symbol)
+            .font(.system(size: size * 0.46, weight: .semibold))
+            .foregroundStyle(.white)
+            .frame(width: size, height: size)
+            .background(badgeColor.gradient, in: RoundedRectangle(cornerRadius: size * 0.3, style: .continuous))
+            .accessibilityHidden(true)
+    }
+}
+
+private extension Songbook {
+    var quickDisplayTitle: String {
+        switch title {
+        case "Песнь Воз. Совета Церквей": return "Песнь Возрождения Совета Церквей"
+        case "Молодежный сборник": return "Молодёжный сборник"
+        default: return title
+        }
     }
 }
 
