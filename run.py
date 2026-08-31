@@ -23,6 +23,7 @@ from app.handlers.user_handlers import (
 from app.storage import restart_data
 from app.keyboards.admin_keyboard import get_admin_keyboard
 from app.config import TOKEN
+from app.security import RateLimitMiddleware
 
 
 TELEGRAM_API_IP = "149.154.167.220"
@@ -65,6 +66,9 @@ def create_bot() -> Bot:
 
 def create_dispatcher() -> Dispatcher:
     dp = Dispatcher()
+    dp.message.outer_middleware(RateLimitMiddleware(limit=8, period=10))
+    dp.callback_query.outer_middleware(RateLimitMiddleware(limit=15, period=10))
+    dp.inline_query.outer_middleware(RateLimitMiddleware(limit=20, period=10))
     dp.inline_query.register(inline_search)
 
     # 🚀 handlers

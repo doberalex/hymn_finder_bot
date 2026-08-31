@@ -120,7 +120,15 @@ async def handle_search(message: Message):
 
     mode = user_mode.get(user_id, "all")
 
-    query = message.text
+    query = (message.text or "").strip()
+
+    if not query:
+        await message.answer("Отправьте номер или текст гимна.")
+        return
+
+    if len(query) > 300:
+        await message.answer("Запрос слишком длинный. Используйте не более 300 символов.")
+        return
 
     songbook_id = (
         user_songbook.get(user_id)
@@ -219,6 +227,10 @@ async def handle_search(message: Message):
 async def main_handler(message: Message):
     text = message.text
     user_id = message.from_user.id
+
+    if text is None:
+        await message.answer("Я ищу по тексту. Отправьте номер, название или строку гимна.")
+        return
 
     # ⚙️ admin handlers
     handled = await admin_handler(

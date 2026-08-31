@@ -20,6 +20,10 @@ from app.services.log_service import log_search
 # 📖 INLINE РЕЖИМ
 async def inline_search(inline_query: InlineQuery):
     query = inline_query.query.strip()
+
+    if len(query) > 300:
+        await inline_query.answer([], cache_time=5, is_personal=True)
+        return
     start_time = time.time()
 
     # если пусто — показываем дефолтные песни
