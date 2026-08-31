@@ -12,6 +12,7 @@ from aiogram.types import (
 
 from aiogram.filters import CommandStart, Command
 
+from app.config import BOT_VERSION
 from app.db import db
 
 from app.storage import (
@@ -103,7 +104,13 @@ async def about_handler(message: Message):
         "ℹ️ <b>О боте</b>\n\n"
         "HymnFinderBot — твой помощник в поиске песен 📖🎶\n\n"
         "👨‍💻 Сделал: <a href='https://t.me/doberalex'>Александр</a>\n"
-        "🚀 Версия: 1.0\n\n"
+        f"🚀 Версия: {BOT_VERSION}\n\n"
+        f"🆕 <b>Новое в версии {BOT_VERSION}</b>\n"
+        "🌐 Выбор языка: русский, украинский, английский и узбекский\n"
+        "📚 Полный каталог: 22 сборника и 16 542 гимна\n"
+        "⭐ Избранное с сохранением\n"
+        "⚡ Быстрый доступ к любимым сборникам\n"
+        "🔎 Поиск по названию, тексту или всему сразу\n\n"
         "💬 Есть идеи или что улучшить? Пиши — не стесняйся 😉",
         parse_mode="HTML",
         disable_web_page_preview=True

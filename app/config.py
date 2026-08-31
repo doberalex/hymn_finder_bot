@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+BOT_VERSION = "2.0"
+
 
 def required_env(name: str) -> str:
     value = os.getenv(name, "").strip()
