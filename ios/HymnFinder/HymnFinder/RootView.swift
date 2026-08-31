@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
 
     var body: some View {
         Group {
@@ -10,20 +11,20 @@ struct RootView: View {
                     Image(systemName: "music.note.list")
                         .font(.system(size: 52, weight: .light))
                         .foregroundStyle(Color("AccentColor"))
-                    ProgressView("Открываем песенники…")
+                    ProgressView(language.text("loading"))
                 }
             } else if let error = library.loadError {
-                ContentUnavailableView("Каталог недоступен", systemImage: "exclamationmark.triangle", description: Text(error))
+                ContentUnavailableView(language.text("catalog_unavailable"), systemImage: "exclamationmark.triangle", description: Text(error))
             } else {
                 TabView {
                     SearchView()
-                        .tabItem { Label("Поиск", systemImage: "magnifyingglass") }
+                        .tabItem { Label(language.text("search"), systemImage: "magnifyingglass") }
                     SongbooksView()
-                        .tabItem { Label("Сборники", systemImage: "books.vertical") }
+                        .tabItem { Label(language.text("songbooks"), systemImage: "books.vertical") }
                     FavoritesView()
-                        .tabItem { Label("Избранное", systemImage: "star") }
+                        .tabItem { Label(language.text("favorites"), systemImage: "star") }
                     AboutView()
-                        .tabItem { Label("Ещё", systemImage: "ellipsis.circle") }
+                        .tabItem { Label(language.text("more"), systemImage: "ellipsis.circle") }
                 }
             }
         }
@@ -32,6 +33,7 @@ struct RootView: View {
 
 struct SearchView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
     @State private var query = ""
     @State private var scope: SearchScope = .all
     @State private var results: [Hymn] = []
@@ -43,16 +45,16 @@ struct SearchView: View {
                 if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     QuickAccessView()
                 } else if results.isEmpty {
-                    ContentUnavailableView.search(text: query)
+                    ContentUnavailableView(language.text("nothing_found"), systemImage: "magnifyingglass", description: Text(query))
                 } else {
                     List(results) { hymn in HymnRow(hymn: hymn) }
                         .listStyle(.plain)
                 }
             }
-            .navigationTitle("Гимны")
-            .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Номер, название или текст")
+            .navigationTitle(language.text("hymns"))
+            .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: language.text("search_prompt"))
             .searchScopes($scope) {
-                ForEach(SearchScope.allCases) { Text($0.rawValue).tag($0) }
+                ForEach(SearchScope.allCases) { Text($0.label(using: language)).tag($0) }
             }
             .onChange(of: query) { _, _ in scheduleSearch() }
             .onChange(of: scope) { _, _ in scheduleSearch() }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SongbooksView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
     @State private var filter = ""
 
     private var visibleBooks: [Songbook] {
@@ -19,20 +20,21 @@ struct SongbooksView: View {
                         SongbookBadgeView(songbook: songbook, size: 42)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(songbook.title).font(.headline)
-                            Text("\(songbook.languageName) · \(songbook.hymnCount) песен")
+                            Text("\(language.languageName(songbook.language)) · \(language.format("songs_count", songbook.hymnCount))")
                                 .font(.subheadline).foregroundStyle(.secondary)
                         }
                     }.padding(.vertical, 3)
                 }
             }
-            .navigationTitle("Сборники")
-            .searchable(text: $filter, prompt: "Название сборника")
+            .navigationTitle(language.text("songbooks"))
+            .searchable(text: $filter, prompt: language.text("songbook_search"))
         }
     }
 }
 
 struct SongbookDetailView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
     let songbook: Songbook
     @State private var query = ""
     @State private var results: [Hymn] = []
@@ -41,7 +43,7 @@ struct SongbookDetailView: View {
         List(results) { HymnRow(hymn: $0) }
             .navigationTitle(songbook.title)
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $query, prompt: "Номер или текст")
+            .searchable(text: $query, prompt: language.text("number_or_text"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -51,8 +53,8 @@ struct SongbookDetailView: View {
                     }
                     .accessibilityLabel(
                         library.isQuickAccess(songbook)
-                        ? "Убрать из быстрого доступа"
-                        : "Добавить в быстрый доступ"
+                        ? language.text("remove_quick")
+                        : language.text("add_quick")
                     )
                 }
             }
@@ -66,23 +68,25 @@ struct SongbookDetailView: View {
 
 struct FavoritesView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
 
     var body: some View {
         NavigationStack {
             Group {
                 if library.favorites.isEmpty {
-                    ContentUnavailableView("Пока пусто", systemImage: "star", description: Text("Добавляйте часто используемые гимны в избранное"))
+                    ContentUnavailableView(language.text("empty"), systemImage: "star", description: Text(language.text("favorites_hint")))
                 } else {
                     List(library.favorites) { HymnRow(hymn: $0) }.listStyle(.plain)
                 }
             }
-            .navigationTitle("Избранное")
+            .navigationTitle(language.text("favorites"))
         }
     }
 }
 
 struct HymnDetailView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
     @AppStorage("hymnFontSize") private var fontSize = 21.0
     let hymn: Hymn
 
@@ -106,8 +110,8 @@ struct HymnDetailView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
-                    Button("Меньше", systemImage: "textformat.size.smaller") { fontSize = max(15, fontSize - 2) }
-                    Button("Больше", systemImage: "textformat.size.larger") { fontSize = min(34, fontSize + 2) }
+                    Button(language.text("smaller"), systemImage: "textformat.size.smaller") { fontSize = max(15, fontSize - 2) }
+                    Button(language.text("larger"), systemImage: "textformat.size.larger") { fontSize = min(34, fontSize + 2) }
                 } label: { Image(systemName: "textformat.size") }
                 Button { library.toggleFavorite(hymn) } label: {
                     Image(systemName: library.isFavorite(hymn) ? "star.fill" : "star")
@@ -119,20 +123,30 @@ struct HymnDetailView: View {
 }
 
 struct AboutView: View {
+    @EnvironmentObject private var language: AppLanguageSettings
+
     var body: some View {
         NavigationStack {
             List {
-                Section("О приложении") {
-                    LabeledContent("Версия", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
-                    LabeledContent("Работа без интернета", value: "Да")
+                Section(language.text("app_language")) {
+                    Picker(language.text("language"), selection: $language.selection) {
+                        Text(language.systemOptionTitle).tag(AppLanguageSettings.systemValue)
+                        ForEach(InterfaceLanguage.allCases) { item in
+                            Text(item.nativeName).tag(item.rawValue)
+                        }
+                    }
                 }
-                Section("Подсказка") {
-                    Text("Ищите по номеру, названию или нескольким словам из любого куплета. Размер текста меняется кнопкой Aa в открытом гимне.")
+                Section(language.text("about")) {
+                    LabeledContent(language.text("version"), value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
+                    LabeledContent(language.text("offline"), value: language.text("yes"))
                 }
-                Section("Конфиденциальность") {
-                    Text("Поисковые запросы и избранное остаются на этом устройстве. Приложение не требует регистрации.")
+                Section(language.text("tip")) {
+                    Text(language.text("tip_text"))
                 }
-            }.navigationTitle("Ещё")
+                Section(language.text("privacy")) {
+                    Text(language.text("privacy_text"))
+                }
+            }.navigationTitle(language.text("more"))
         }
     }
 }

@@ -14,6 +14,7 @@
 		A006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B006 /* Assets.xcassets */; };
 		A007 /* hymns.json in Resources */ = {isa = PBXBuildFile; fileRef = B007 /* hymns.json */; };
 		A008 /* QuickAccessViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B010 /* QuickAccessViews.swift */; };
+		A009 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B011 /* AppLanguage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		B008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B009 /* HymnFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HymnFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B010 /* QuickAccessViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAccessViews.swift; sourceTree = "<group>"; };
+		B011 /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +37,7 @@
 
 /* Begin PBXGroup section */
 		D001 = {isa = PBXGroup; children = (D002 /* HymnFinder */, D003 /* Products */); sourceTree = "<group>"; };
-		D002 /* HymnFinder */ = {isa = PBXGroup; children = (B001, B002, B003, B004, B005, B010, B006, B007, B008); path = HymnFinder; sourceTree = "<group>"; };
+		D002 /* HymnFinder */ = {isa = PBXGroup; children = (B001, B002, B003, B004, B005, B010, B011, B006, B007, B008); path = HymnFinder; sourceTree = "<group>"; };
 		D003 /* Products */ = {isa = PBXGroup; children = (B009 /* HymnFinder.app */); name = Products; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
@@ -76,7 +78,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C002 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A001, A002, A003, A004, A005, A008); runOnlyForDeploymentPostprocessing = 0; };
+		C002 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A001, A002, A003, A004, A005, A008, A009); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */

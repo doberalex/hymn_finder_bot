@@ -12,27 +12,32 @@ private enum FlagKind {
 
 struct QuickAccessView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
 
-    private let languages = [
-        LanguageShortcut(id: "ru", title: "Русский", flag: .russia),
-        LanguageShortcut(id: "uk", title: "Українська", flag: .ukraine),
-        LanguageShortcut(id: "en", title: "English", flag: .unitedKingdom),
-        LanguageShortcut(id: "uz", title: "O‘zbekcha", flag: .uzbekistan)
-    ]
+    private var languages: [LanguageShortcut] {
+        let items = [
+            LanguageShortcut(id: "ru", title: "Русский", flag: .russia),
+            LanguageShortcut(id: "uk", title: "Українська", flag: .ukraine),
+            LanguageShortcut(id: "en", title: "English", flag: .unitedKingdom),
+            LanguageShortcut(id: "uz", title: "O‘zbekcha", flag: .uzbekistan)
+        ]
+        let preferred = language.resolved.rawValue
+        return items.filter { $0.id == preferred } + items.filter { $0.id != preferred }
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Быстрый доступ").font(.title2.bold())
-                    Text("Откройте любимый сборник или выберите язык")
+                    Text(language.text("quick_access")).font(.title2.bold())
+                    Text(language.text("quick_subtitle"))
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
 
                 quickSongbooks
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("По языку").font(.headline)
+                    Text(language.text("by_language")).font(.headline)
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                         ForEach(languages) { language in
                             NavigationLink {
@@ -55,7 +60,7 @@ struct QuickAccessView: View {
     private var quickSongbooks: some View {
         let books = library.quickSongbooks
         if books.isEmpty {
-            Label("Закрепите сборник кнопкой булавки на его странице", systemImage: "pin")
+            Label(language.text("pin_hint"), systemImage: "pin")
                 .font(.subheadline).foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, minHeight: 72)
                 .padding(.horizontal)
@@ -82,6 +87,7 @@ struct QuickAccessView: View {
 }
 
 private struct QuickSongbookCard: View {
+    @EnvironmentObject private var language: AppLanguageSettings
     let songbook: Songbook
     let compact: Bool
 
@@ -93,14 +99,14 @@ private struct QuickSongbookCard: View {
                     Spacer(minLength: 2)
                     Text(songbook.quickDisplayTitle)
                         .font(.headline).multilineTextAlignment(.leading).lineLimit(3)
-                    Text("\(songbook.hymnCount) песен")
+                    Text(language.format("songs_count", songbook.hymnCount))
                         .font(.caption).foregroundStyle(.secondary)
                 }
             } else {
                 HStack(alignment: .bottom, spacing: 16) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(songbook.quickDisplayTitle).font(.headline).multilineTextAlignment(.leading)
-                        Text("\(songbook.hymnCount) песен")
+                        Text(language.format("songs_count", songbook.hymnCount))
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                     Spacer(minLength: 8)
@@ -236,6 +242,7 @@ private struct FlagBackdrop: View {
 
 struct LanguageSongbooksView: View {
     @EnvironmentObject private var library: HymnLibrary
+    @EnvironmentObject private var language: AppLanguageSettings
     let languageCode: String
     let title: String
 
@@ -250,7 +257,7 @@ struct LanguageSongbooksView: View {
             } label: {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(songbook.title).font(.headline)
-                    Text("\(songbook.hymnCount) песен").font(.subheadline).foregroundStyle(.secondary)
+                    Text(language.format("songs_count", songbook.hymnCount)).font(.subheadline).foregroundStyle(.secondary)
                 }.padding(.vertical, 4)
             }
         }

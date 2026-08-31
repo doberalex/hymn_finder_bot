@@ -53,7 +53,7 @@ final class HymnLibrary: ObservableObject {
             hymns = decoded
             isLoading = false
         } catch {
-            loadError = "Не удалось открыть каталог гимнов. \(error.localizedDescription)"
+            loadError = error.localizedDescription
             isLoading = false
         }
     }

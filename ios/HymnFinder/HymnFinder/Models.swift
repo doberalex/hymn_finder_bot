@@ -20,10 +20,18 @@ struct Songbook: Identifiable, Hashable {
     let hymnCount: Int
 }
 
-enum SearchScope: String, CaseIterable, Identifiable {
-    case all = "Все"
-    case title = "Название"
-    case text = "Текст"
+enum SearchScope: CaseIterable, Identifiable {
+    case all
+    case title
+    case text
 
     var id: Self { self }
+
+    @MainActor func label(using language: AppLanguageSettings) -> String {
+        switch self {
+        case .all: language.text("scope_all")
+        case .title: language.text("scope_title")
+        case .text: language.text("scope_text")
+        }
+    }
 }
