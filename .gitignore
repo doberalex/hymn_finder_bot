@@ -5,3 +5,10 @@ __pycache__/
 *.log
 restart.tmp
 .DS_Store
+
+# Xcode local state and build products
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
