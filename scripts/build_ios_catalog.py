@@ -29,19 +29,19 @@ def main() -> None:
         if isinstance(songs, dict):
             songs = songs.get("Songs") or songs.get("songs") or songs.get("data") or []
 
-        for index, song in enumerate(songs):
+        for index, song in enumerate(songs, start=1):
             title = str(song.get("title") or "").strip()
             text = str(song.get("song_text") or "").strip()
             if not title and not text:
                 continue
-            number = song.get("number") or index + 1
+            number = song.get("number") or index
             try:
                 number = int(number)
             except (TypeError, ValueError):
-                number = index + 1
+                number = index
             hymns.append(
                 {
-                    "id": f"{language}/{folder.name}/{number}",
+                    "id": f"{language}/{folder.name}/{index}",
                     "number": number,
                     "title": title or f"Гимн {number}",
                     "text": text,

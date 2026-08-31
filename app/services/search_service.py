@@ -81,6 +81,8 @@ async def search_hymns(
     query: str,
     offset: int = 0,
     songbook_id: int = None,
+    language_code: str = None,
+    scope: str = "all",
     limit: int = 20,
     strict: bool = True
 ):
@@ -93,6 +95,8 @@ async def search_hymns(
             h.title,
             h.content,
             h.tune,
+            h.words,
+            s.language_code,
             s.title AS songbook
         FROM hymns h
         LEFT JOIN songbooks s ON h.songbook_id = s.id
@@ -105,6 +109,9 @@ async def search_hymns(
     if songbook_id:
         conditions.append("h.songbook_id = %s")
         values.append(songbook_id)
+    if language_code:
+        conditions.append("s.language_code = %s")
+        values.append(language_code)
 
     # 🔢 поиск по номеру
     if query_norm.isdigit():
@@ -115,19 +122,16 @@ async def search_hymns(
 
     # 🔍 поиск по фразе
     elif query_norm:
-        conditions.append("""
-            (
-                h.title_normalized LIKE %s OR
-                h.content_normalized LIKE %s
-            )
-        """)
-
         search_value = f"%{query_norm}%"
-
-        values.extend([
-            search_value,
-            search_value
-        ])
+        if scope == "title":
+            conditions.append("h.title_normalized LIKE %s")
+            values.append(search_value)
+        elif scope == "text":
+            conditions.append("h.content_normalized LIKE %s")
+            values.append(search_value)
+        else:
+            conditions.append("(h.title_normalized LIKE %s OR h.content_normalized LIKE %s)")
+            values.extend([search_value, search_value])
 
         order_clause = """
             ORDER BY

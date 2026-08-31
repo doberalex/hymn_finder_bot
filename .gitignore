@@ -5,6 +5,7 @@ __pycache__/
 *.log
 restart.tmp
 .DS_Store
+backups/
 
 # Xcode local state and build products
 DerivedData/

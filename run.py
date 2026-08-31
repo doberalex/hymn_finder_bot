@@ -18,7 +18,11 @@ from app.handlers.user_handlers import (
     about_handler,
     main_handler,
     choose_songbook,
-    show_full_text
+    show_full_text,
+    choose_language,
+    favorite_callback,
+    quick_callback,
+    scope_callback,
 )
 from app.storage import restart_data
 from app.keyboards.admin_keyboard import get_admin_keyboard
@@ -97,6 +101,22 @@ def create_dispatcher() -> Dispatcher:
     dp.callback_query.register(
         show_full_text,
         lambda c: c.data.startswith("full_")
+    )
+    dp.callback_query.register(
+        choose_language,
+        lambda c: c.data.startswith("lang_")
+    )
+    dp.callback_query.register(
+        favorite_callback,
+        lambda c: c.data.startswith("fav_")
+    )
+    dp.callback_query.register(
+        quick_callback,
+        lambda c: c.data.startswith("quick_")
+    )
+    dp.callback_query.register(
+        scope_callback,
+        lambda c: c.data.startswith("scope_")
     )
     return dp
 

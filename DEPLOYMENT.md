@@ -46,3 +46,25 @@ Notes:
 - `.env` is deployed over SFTP but is never committed to Git.
 - `venv`, `.git`, logs and cache files are excluded from Git and should not be
   uploaded as application source.
+
+## Catalog database update
+
+Before changing the catalogue, create a recoverable database backup:
+
+```bash
+chmod +x scripts/backup_database.sh
+scripts/backup_database.sh
+```
+
+Audit all source files without changing MySQL:
+
+```bash
+venv/bin/python import_songs.py
+```
+
+Apply the schema and import every language/songbook only after the audit reports
+22 songbooks and 16,542 usable hymns:
+
+```bash
+venv/bin/python import_songs.py --apply
+```

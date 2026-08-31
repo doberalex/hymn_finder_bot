@@ -15,12 +15,16 @@ def get_main_keyboard(user_id: int, user_mode: dict, user_songbook: dict):
 
     if not mode:
         keyboard = [
-            [KeyboardButton(text="📂 Искать по сборнику"), KeyboardButton(text="🌍 Искать по всей базе")]
+            [KeyboardButton(text="📂 Искать по сборнику"), KeyboardButton(text="🌍 Искать по всей базе")],
+            [KeyboardButton(text="🌐 Язык песен"), KeyboardButton(text="⭐ Избранное")],
+            [KeyboardButton(text="⚡ Быстрый доступ"), KeyboardButton(text="🔎 Область поиска")],
         ] + admin_button
 
     elif mode == "all":
         keyboard = [
             [KeyboardButton(text="📂 Искать по сборнику")],
+            [KeyboardButton(text="🌐 Язык песен"), KeyboardButton(text="⭐ Избранное")],
+            [KeyboardButton(text="⚡ Быстрый доступ"), KeyboardButton(text="🔎 Область поиска")],
             [KeyboardButton(text="⬅️ Назад")]
         ] + admin_button
 
@@ -28,10 +32,14 @@ def get_main_keyboard(user_id: int, user_mode: dict, user_songbook: dict):
         if songbook_id:
             keyboard = [
                 [KeyboardButton(text="❌ Сбросить сборник")],
+                [KeyboardButton(text="🌐 Язык песен"), KeyboardButton(text="⭐ Избранное")],
+                [KeyboardButton(text="⚡ Быстрый доступ"), KeyboardButton(text="🔎 Область поиска")],
                 [KeyboardButton(text="⬅️ Назад")]
             ] + admin_button
         else:
             keyboard = [
+                [KeyboardButton(text="🌐 Язык песен"), KeyboardButton(text="⭐ Избранное")],
+                [KeyboardButton(text="⚡ Быстрый доступ"), KeyboardButton(text="🔎 Область поиска")],
                 [KeyboardButton(text="⬅️ Назад")]
             ] + admin_button
 
