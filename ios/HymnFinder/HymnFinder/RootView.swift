@@ -79,7 +79,9 @@ struct HymnRow: View {
     let hymn: Hymn
 
     var body: some View {
-        NavigationLink(value: hymn) {
+        NavigationLink {
+            HymnDetailView(hymn: hymn)
+        } label: {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .firstTextBaseline) {
                     Text("№ \(hymn.number)").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
@@ -92,6 +94,5 @@ struct HymnRow: View {
                 }
             }.padding(.vertical, 4)
         }
-        .navigationDestination(for: Hymn.self) { HymnDetailView(hymn: $0) }
     }
 }
