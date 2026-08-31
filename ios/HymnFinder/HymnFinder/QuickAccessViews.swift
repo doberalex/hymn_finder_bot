@@ -136,18 +136,11 @@ struct SongbookBadgeView: View {
         return "book.closed.fill"
     }
 
-    private var badgeColor: Color {
-        let palette: [Color] = [.indigo, .teal, .blue, .purple, .orange, .mint, .cyan]
-        let seed = songbook.id.unicodeScalars.reduce(0) { $0 + Int($1.value) }
-        return palette[seed % palette.count]
-    }
-
     var body: some View {
         Image(systemName: symbol)
-            .font(.system(size: size * 0.46, weight: .semibold))
-            .foregroundStyle(.white)
+            .font(.system(size: size * 0.62, weight: .semibold))
+            .foregroundStyle(.primary.opacity(0.82))
             .frame(width: size, height: size)
-            .background(badgeColor.gradient, in: RoundedRectangle(cornerRadius: size * 0.3, style: .continuous))
             .accessibilityHidden(true)
     }
 }
