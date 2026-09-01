@@ -19,6 +19,7 @@ def required_env(name: str) -> str:
 
 TOKEN = required_env("BOT_TOKEN")
 ADMIN_ID = int(required_env("ADMIN_ID"))
+TELEGRAM_PROXY_URL = os.getenv("TELEGRAM_PROXY_URL", "").strip()
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost").strip(),

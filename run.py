@@ -26,7 +26,7 @@ from app.handlers.user_handlers import (
 )
 from app.storage import restart_data
 from app.keyboards.admin_keyboard import get_admin_keyboard
-from app.config import TOKEN
+from app.config import TELEGRAM_PROXY_URL, TOKEN
 from app.security import RateLimitMiddleware
 
 
@@ -62,9 +62,12 @@ class TelegramIPv4Resolver:
 
 
 def create_bot() -> Bot:
-    session = AiohttpSession()
+    session = AiohttpSession(proxy=TELEGRAM_PROXY_URL or None)
     session._connector_init["family"] = socket.AF_INET
-    session._connector_init["resolver"] = TelegramIPv4Resolver()
+
+    if not TELEGRAM_PROXY_URL:
+        session._connector_init["resolver"] = TelegramIPv4Resolver()
+
     return Bot(token=TOKEN, session=session)
 
 
